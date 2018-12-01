@@ -51,7 +51,7 @@ void MainComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFil
     auto lock = make_lock();
     
     if(proc_) {
-        // シンセの動作検証用に、仮のMIDIデータを作ってプラグインに渡す
+        // シンセの動作検証用に、プラグインに送るための仮のMIDIデータを作る
         {
             // 指定したサンプル位置でのノートを返す。
             auto get_note_at = [](auto sample_rate, auto sample_pos) {
