@@ -1,0 +1,11 @@
+*.*
+.*
+
+!.gitignore
+!*.jucer
+!*.cpp
+!*.hpp
+!*.h
+
+*/
+!Source
