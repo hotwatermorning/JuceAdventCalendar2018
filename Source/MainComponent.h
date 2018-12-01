@@ -49,7 +49,7 @@ private:
     //! プラグインから取得したエディターGUI
     std::unique_ptr<AudioProcessorEditor> editor_;
     
-    AudioPluginFormatManager mgr_;
+    AudioPluginFormatManager apfm_;
     
     //! @name 再生処理に使用する変数
     //@{

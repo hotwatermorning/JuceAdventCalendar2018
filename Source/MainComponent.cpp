@@ -19,11 +19,11 @@ MainComponent::MainComponent()
     setAudioChannels (2, 2);
     
     // AudioPluginFormatManagerに、ホストとして対応したいPluginFormatを設定する。
-    mgr_.addFormat(new VST3PluginFormat);
-    mgr_.addFormat(new AudioUnitPluginFormat);
+    apfm_.addFormat(new VST3PluginFormat);
+    apfm_.addFormat(new AudioUnitPluginFormat);
     
     // ↑ただし、既定で有効にするPluginFormatはProjucer側で事前に設定してあるので、
-    // 実際は個別に`addFormat()`を呼び出さなくても、`mgr_.addDefaultFormats()`を呼び出すだけで十分。
+    // 実際は個別に`addFormat()`を呼び出さなくても、`apfm_.addDefaultFormats()`を呼び出すだけで十分。
 }
 
 MainComponent::~MainComponent()
@@ -128,7 +128,7 @@ void MainComponent::filesDropped (const StringArray &files, int x, int y)
     // ドロップしたファイルをスキャンして、PluginDescriptionを生成。
     // プラグインフォーマットによっては、一つのファイルに複数のプラグインが含まれていることがあるので、
     // PluginDescriptionの配列を参照として渡しておいて、その配列に見つかったプラグインの情報を追加していく仕組みになっている。
-    KnownPluginList().scanAndAddDragAndDroppedFiles(mgr_, files[0], found);
+    KnownPluginList().scanAndAddDragAndDroppedFiles(apfm_, files[0], found);
     
     if(found.isEmpty()) { return; }
     
@@ -148,7 +148,7 @@ void MainComponent::LoadPlugin(PluginDescription const &desc)
     // AudioPluginFormatManagerを利用して、プラグインを構築する
     // プラグインフォーマットによっては、構築のタイミングでサンプリングレートとバッファサイズを必要とするものがあるので、
     // 初期値として、ここでそれらを渡しておく。
-    AudioProcessor* p = mgr_.createPluginInstance(desc, sample_rate, buffer_size, error);
+    AudioProcessor* p = apfm_.createPluginInstance(desc, sample_rate, buffer_size, error);
 
     if(error.isEmpty() == false) {
         std::cout << "Cannot load a plugin: " << error << std::endl;
