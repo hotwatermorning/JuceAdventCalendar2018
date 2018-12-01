@@ -12,20 +12,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class ScanDialog
-:   public ThreadWithProgressWindow
-{
-    KnownPluginList known_plugin_list_;
-    AudioPluginFormatManager mgr_;
-    
-    std::unique_ptr<juce::PluginDirectoryScanner> scanner_;
-};
-
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
 class MainComponent
 :   public AudioAppComponent
 ,   public FileDragAndDropTarget
@@ -51,19 +37,31 @@ private:
     bool isInterestedInFileDrag (const StringArray &files) override;
     void filesDropped (const StringArray &files, int x, int y) override;
     
+    //! proc_変数の排他制御用
     std::mutex mutable mtx_;
     std::unique_lock<std::mutex> make_lock() const {
         return std::unique_lock<std::mutex>(mtx_);
     }
-    
+
+    //! ロードしたプラグイン
     std::unique_ptr<AudioProcessor> proc_;
-    std::unique_ptr<AudioProcessorEditor> editor_;
-    AudioPluginFormatManager mgr_;
-    int sample_pos_;
-    int last_pitch_;
-    MidiBuffer mb_;
     
+    //! プラグインから取得したエディターGUI
+    std::unique_ptr<AudioProcessorEditor> editor_;
+    
+    AudioPluginFormatManager mgr_;
+    
+    //! @name 再生処理に使用する変数
+    //@{
+    int sample_pos_; //!< 現在の再生サンプル位置
+    int last_pitch_; //!< 最後にプラグインに送信したMIDIデータ
+    MidiBuffer mb_;  //!< プラグインに送信するMIDIデータ
+    //@}
+    
+    //! プラグインをロードして、proc_変数にセットする。
     void LoadPlugin(PluginDescription const &desc);
+    
+    //! プラグインをアンロードする。 (ロードされていないときは何もしない)
     void UnloadPlugin();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
